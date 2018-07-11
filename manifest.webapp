@@ -1,0 +1,10 @@
+{
+  "name": "SpeechSyn",
+  "description": "Web Speech API speech synthesis demo",
+  "launch_path": "/index.html",
+  "developer": {
+    "name": "DanielMachadoPintos",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API"
+  },
+  "default_locale": "en"
+}

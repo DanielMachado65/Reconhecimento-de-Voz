@@ -11,14 +11,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="master.css">
     <link rel="stylesheet" href="style.css">
-    <title>Voice</title>
+    <title>Voice | Speak </title>
 </head>
 <body>
-    <meta name="google" value="notranslate">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1>Voice</h1>
+                <h1>Voice & Speak </h1>
             </div>
         </div>
         <div class="row">
@@ -40,8 +39,33 @@
                 </div>
             </div>
         </div>
-
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-info" onclick="speak()">Falar</button>
+            </div>
+        </div> 
     </div>
-    <script src="script.js"></script>
+    <script src="speech.js" type="text/javascript" charset="utf-8"></script>
+    <script src="script.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+    $.ajax({
+        url: 'https://api.wit.ai/message',
+        data: {
+        'q':  'ola viki, abra um processo',
+        'access_token' : 'KVK4NH345RMGO4FW7U7U3PBYWPTOY2XS'
+        },
+        dataType: 'jsonp',
+        method: 'GET', 
+            success: function(response) {
+                console.log(response);
+                let array = response['entities'];
+                array.forEach(myFunction);
+            }
+    });
+
+    function myFunction(value, index, array){
+        console.log(value);
+    }
+    </script>
 </body>
 </html>

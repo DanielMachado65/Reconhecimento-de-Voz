@@ -29,9 +29,29 @@ $('#button-click').on("click", function Speech() {
         dataType: 'jsonp',
         method: 'GET',
             success: function(response) {
-            console.log("success!", response);
+               try{
+                  console.log(response);
+                  var synth = window.speechSynthesis;
+                  var inputTxt = $('#note-textarea');
+                  if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = synth.getVoices()[15];
+                  }
+                  if (synth.speaking) {
+                      console.error('speechSynthesis.speaking');
+                      return;
+                  }
+                  if (inputTxt.val() !== '') {
+                    var utterThis = new SpeechSynthesisUtterance(inputTxt.val());
+                    utterThis.pitch = 1;
+                    utterThis.rate = 1.2;
+                    synth.speak(utterThis);
+                  }
+                }catch(e){
+                  console.log(e);
+                }
             }
         });
+       
     }
     recognition.onspeechend = function() {
         recognition.stop();
