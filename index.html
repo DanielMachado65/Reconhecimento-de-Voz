@@ -10,6 +10,7 @@
     <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/APP_ID">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="master.css">
+    <link rel="stylesheet" href="style.css">
     <title>Voice</title>
 </head>
 <body>
@@ -26,6 +27,12 @@
             </div>
         </div>
         <hr>
+        <input id="button-click" type="checkbox">        
+        <label for="button-click">
+            <div class="menu">
+                <span onclick="" class="hamburguer"></span>
+            </div>
+        </label>
         <div class="app">
             <div class="input-single">
                 <div class="form-group">
@@ -33,37 +40,8 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <button type="button" class="btn btn-outline-success" id="start-record-btn" title="Start Recording">Iniciar Reconhecimento</button>
-            </div>
-            <div class="col-md-6">
-                <button type="button" class="btn btn-outline-danger" id="pause-record-btn" title="Pause Recording" onclick="Validation.enviar()">Parar Reconhecimento</button>
-            </div>
-        </div>
+
     </div>
-    <script type="text/javascript" charset="utf-8" async defer>
-        class Validation {
-            static enviar() {
-                $.ajax({
-                    url: 'https://api.wit.ai/message',
-                        data: {
-                        'q':  $('#note-textarea').val().q_validation(),
-                        'access_token' : 'KVK4NH345RMGO4FW7U7U3PBYWPTOY2XS'
-                        },
-                        dataType: 'jsonp',
-                        method: 'GET',
-                        success: function(response) {
-                            console.log("success!", response);
-                        }
-                });  
-            }
-            static q_validation(text) {
-                return (text.length > 255 || text.length < 0) ? 'null' : text;
-            }   
-        }
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
