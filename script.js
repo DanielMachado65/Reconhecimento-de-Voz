@@ -5,10 +5,9 @@ try{
     var recognition = new SpeechRecognition();
 }catch(e){
     console.error(e);
-      $('.no-browser-support').show();
-      $('.app').hide();
 }
 var button_click = $("#button-click");
+
 // HACK: essa é a classe/função que trata o audio. 
 $('#button-click').on("click", function Speech() {
     recognition.interimResults = false;
@@ -20,36 +19,56 @@ $('#button-click').on("click", function Speech() {
         $('#note-textarea').val(speechResult);
         //TODO: restante do código para tratamento entra aqui
         console.log('Confidence: ' + event.results[0][0].confidence);
+        var accessToken ="57b17c520a314701a3f2815d160473ee";
+        var baseUrl = "https://api.dialogflow.com/v1/";
+        var text = $('#note-textarea').val();
         $.ajax({
-        url: 'https://api.wit.ai/message',
-        data: {
-        'q':  $('#note-textarea').val(),
-        'access_token' : 'KVK4NH345RMGO4FW7U7U3PBYWPTOY2XS'
-        },
-        dataType: 'jsonp',
-        method: 'GET',
-            success: function(response) {
-               try{
-                  console.log(response);
-                  var synth = window.speechSynthesis;
-                  var inputTxt = $('#note-textarea');
-                  if (speechSynthesis.onvoiceschanged !== undefined) {
-                    speechSynthesis.onvoiceschanged = synth.getVoices()[15];
-                  }
-                  if (synth.speaking) {
-                      console.error('speechSynthesis.speaking');
-                      return;
-                  }
-                  if (inputTxt.val() !== '') {
-                    var utterThis = new SpeechSynthesisUtterance(inputTxt.val());
-                    utterThis.pitch = 1;
-                    utterThis.rate = 1.2;
-                    synth.speak(utterThis);
-                  }
-                }catch(e){
-                  console.log(e);
+          type: 'POST',
+          url: baseUrl + "query?v=20180716",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          headers: {
+              "Authorization": "Bearer " + accessToken
+          },
+          data: JSON.stringify({ query: text, lang: "pt-br", sessionId: "somerandomthing" }),
+          success: function(data) {
+              console.log(data.result.fulfillment.speech);
+              console.log(data.result.action);
+              try{
+                var synth = window.speechSynthesis;
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                  speechSynthesis.onvoiceschanged = synth.getVoices()[15];
                 }
-            }
+                if (synth.speaking) {
+                    console.error('speechSynthesis.speaking');
+                    return;
+                }
+                if (inputTxt.val() !== '') {
+                  var utterThis = new SpeechSynthesisUtterance(data.result.fulfillment.speech);
+                  utterThis.pitch = 1.4;
+                  utterThis.rate = 1.2;
+                  synth.speak(utterThis);
+                  utterThis.onend = function(event) {
+                    console.log('terminou');
+                  }
+                  utterThis.onerror = function(event) {
+                    console.log('deu erro aqui');
+                  }
+                  utterThis.onmark = function(event) {
+                    console.log('mark tag');
+                  }
+                  utterThis.onpause = function(event) {
+                    console.log('uma pausa foi feita');
+                  }
+                }
+              }catch(e){
+                console.log(e);
+              }
+          },
+          error: function () {
+              alert('Not working yet');
+              // alert("error: [" + textStatus + "] --> " + responseData);
+          }
         });
        
     }

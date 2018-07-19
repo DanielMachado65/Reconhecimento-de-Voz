@@ -1,0 +1,279 @@
+# Ajax::
+
+meio de fazer requisição javascript ou xml __assincrona___. Ele pode enviar e receber niformações em vários formatos:
+    * json
+    * xml 
+    * html
+    * texto
+
+Ele __não precisa atualizar__ a página para enviar os dados e sabe trabalhar com os dados do servidor.
+
+````js
+// criando uma instância. 
+if (window.XMLHttpRequest {
+    httpRequest = new XMLHttpRequest(); 
+}else if(window.ActiveXObject){
+    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+}
+````
+
+Como JavaScript é orientado à eventos, você receberá uma resposta do tipo `onreadystatechange` propriedade do objeto e nomeando-a após a função a ser chamada quando a solicitação mudar de estado:
+
+```js
+httpRequest.onreadystatechange = function(event){
+    ... 
+}
+// or 
+httpRequest.onreadystatechange = name_function; // reference of function
+function name_function(){
+    ...
+}
+```
+
+Agora você precisa fazer a declaração dos __métodos__;
+
+```js
+/*
+httpRequest.open('GET', 'http://www.example.org/some.file', true)
+*/
+httpRequest.open(url?: DOMString, target?: DOMString, features?: DOMString, replace?: boolean)
+
+// and -- any type of data 
+httpRequest.send(data);
+```
+
+#### Formulando o Header:
+
+para definir o MIME da solicitação. 
+
+````js
+httpRequest.setRequestHeader(header, value)
+// example
+httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+````
+
+## Manipulando a Resposta do Servidor:
+
+### @TODO:
+    * verificar o se o estado da solicitação se encontra pronto:
+````js
+if (httpRequest.readyState === XMLHttpRequest.DONE){
+    // a resposdta completa do servidor foi recebida e não há problema em continuar processsando
+}else{
+    // ainda não pronto
+}
+````
+
+| value | type | 
+|-------| -----|
+| `0` | não **inicializado** ou pedido não inicializado|
+| `1` | **carregando** ou conexão do servidor estabelecida |
+| `2` | **carregado**  ou perdido recebido |
+| `3` | **interativo** ou solicitação de processamento |
+| `4` | **completo** ou pedido finalizado a resposta pronta |
+    
+    * Veriricar o código de resposta.
+
+```js
+if (httpRequest.status === 200) {
+    // done
+} else {
+    // error
+}
+```
+
+    * acessar os dados da reposta
+
+```js
+httpRequest.responseXML // retonra a reposta como XML, objeto que você pode percorrer com as funções do DOM do JavaScript
+
+httpRequest.responseType // retorna a reposta do servidor como uma string de texto
+
+```
+
+#### @Example
+
+```html
+<button id="ajaxButton" type="button">Make a request</button>
+
+<script>
+(function() {
+  var httpRequest;
+  document.getElementById("ajaxButton").addEventListener('click', makeRequest);
+
+  function makeRequest() {
+    httpRequest = new XMLHttpRequest();
+
+    if (!httpRequest) {
+      alert('Giving up :( Cannot create an XMLHTTP instance');
+      return false;
+    }
+    httpRequest.onreadystatechange = alertContents;
+    httpRequest.open('GET', 'test.html');
+    httpRequest.send();
+  }
+
+  function alertContents() {
+    try {
+        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+          if (httpRequest.status === 200) {
+            alert(httpRequest.responseText);
+          } else {
+            alert('There was a problem with the request.');
+          }
+        }
+    }catch( e ){
+        alert('Caught Exception: ' + e.description);
+    }
+  }
+})();
+</script>
+```
+
+
+#### Trabalhando com a resposta do XML:
+
+para o seguinte arquivo:
+
+```xml
+<<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    I'm a Test. 
+</root>
+```
+
+No script só precisamos alterar a linha do código onde fala que é a parte:
+
+````js
+onclick = "makeRequest('test.xml')"
+
+/*na função alertContents()*/
+function alertContents() {
+    var xmldoc = httpRequest.responseXML;
+    var root_mode = xmldoc.getElementsByTagName('root').item(0);
+    alert(root_node.firstChild.data);
+}
+````
+
+#### Trabalhando com a resposta do Dados:
+
+````html
+<label>Your name: 
+  <input type="text" id="ajaxTextbox" />
+</label>
+<span id="ajaxButton" style="cursor: pointer; text-decoration: underline">
+  Make a request
+</span>
+````
+
+no código -- `makeRequest()`:
+
+````js
+ document.getElementById("ajaxButton").onclick = function() { 
+      var userName = document.getElementById("ajaxTextbox").value;
+      makeRequest('test.php',userName); 
+  };
+
+// precisamos modificar o makeRequest();
+function makeRequest(url, userName) {
+     httpRequest = new XMLHttpRequest();
+
+    if (!httpRequest) {
+      alert('Giving up :( Cannot create an XMLHTTP instance');
+      return false;
+    }
+    httpRequest.onreadystatechange = alertContents;
+    httpRequest.open('POST', url);
+    httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    httpRequest.send('userName=' + encodeURIComponent(userName));
+  }
+
+// @Override alertContents()
+function alertContents() {
+  if (httpRequest.readyState === XMLHttpRequest.DONE) {
+    if (httpRequest.status === 200) {
+      var response = JSON.parse(httpRequest.responseText);
+      alert(response.computedString);
+    } else {
+      alert('There was a problem with the request.');
+    }
+  }
+}
+````
+
+no arquivo test.php, deverá conter:
+
+```php
+$name = (isset($_POST['userName'])) ? $_POST['userName'] : 'no name';
+$computedString = "Hi, " . $name;
+$array = ['userName' => $name, 'computedString' => $computedString];
+echo json_encode($array);
+```
+
+<hr>
+
+### Ajax
+
+podemos enviar a requisição `ajax` a partir da seguinte requisição:
+
+````js
+$.ajax({
+  method: "POST",
+  url: "cadastrar.php",
+  data: { nome: "Pedro", email: "pedro@email.com" }
+ })
+````
+
+##### Outro Exemplo:
+
+````js
+ $.ajax({
+      url : "cadastrar.php",
+     type : 'post',
+     data : {
+           nome : "Maria Fernanda",
+           salario :'3500'
+      },
+      beforeSend : function(){
+           $("#resultado").html("ENVIANDO...");
+      }
+ })
+ .done(function(msg){
+     $("#resultado").html(msg);
+})
+ .fail(function(jqXHR, textStatus, msg){
+      alert(msg);
+ }); 
+````
+
+##### @métodos:
+
+Podemos enviar a partir de somente os métodos diretamente. 
+
+````js
+/*Usando o método GET*/
+$.get("url.php", function (resultado) {
+    $('#mensagem').html(resultado);
+})
+
+/*Usando o método POST*/
+$.post("url.php", {
+        nome: "Maria Fernanda", salario: "3000"
+    }
+    ,function (resultado) {
+    $('#mensagem').html(resultado);
+})
+````
+
+### contexto(_context_)
+
+Este objeto será o contexto de todos os retornos de chamada relacionados ao Ajax. Por padrão, o contexto é um objeto que representa as configurações do Ajax usadas na chamada ( $.ajaxSettingsmescladas com as configurações passadas para $.ajax). Por exemplo, especificar um elemento DOM como o contexto fará com que o contexto para o completeretorno de uma solicitação, assim:
+
+````js
+$.ajax({
+  url: "test.html",
+  context: document.body
+}).done(function() {
+  $( this ).addClass( "done" );
+});
+````

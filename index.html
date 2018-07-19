@@ -9,20 +9,21 @@
     <meta name="description" content="">
     <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/APP_ID">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="master.css">
     <link rel="stylesheet" href="style.css">
     <title>Voice | Speak </title>
 </head>
 <body>
+    <div class="menu">
+        <div class="row">
+            <div class="col-md-12">
+                
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="row">
             <div class="col-md-12">
                 <h1>Voice & Speak </h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <label class="no-browser-support" hidden="true">Sorry, Your Browser Doesn't Support the Web Speech API. Try Opening This Demo In Google Chrome.</label>
             </div>
         </div>
         <hr>
@@ -41,30 +42,35 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <button type="button" class="btn btn-info" onclick="speak()">Falar</button>
+                <button type="button" class="btn btn-info" onclick="myFunction()">Falar</button>
             </div>
         </div> 
     </div>
     <script src="speech.js" type="text/javascript" charset="utf-8"></script>
     <script src="script.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
-    $.ajax({
-        url: 'https://api.wit.ai/message',
-        data: {
-        'q':  'ola viki, abra um processo',
-        'access_token' : 'KVK4NH345RMGO4FW7U7U3PBYWPTOY2XS'
-        },
-        dataType: 'jsonp',
-        method: 'GET', 
-            success: function(response) {
-                console.log(response);
-                let array = response['entities'];
-                array.forEach(myFunction);
-            }
-    });
-
-    function myFunction(value, index, array){
-        console.log(value);
+    function myFunction(){
+        var accessToken ="57b17c520a314701a3f2815d160473ee";
+        var baseUrl = "https://api.dialogflow.com/v1/";
+        var text = $('#note-textarea').val();
+        $.ajax({
+                type: 'POST',
+                url: baseUrl + "query?v=20180716",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json", 
+                headers: {
+                    "Authorization": "Bearer " + accessToken
+                },
+                data: JSON.stringify({ query: text, lang: "pt-br", sessionId: "somerandomthing" }),
+                success: function(data) {
+                    console.log(data.result.fulfillment.speech);
+                    console.log(data.result.action);
+                },
+                error: function () {
+                    alert('deu ruim');
+                    // alert("error: [" + textStatus + "] --> " + responseData);
+                }
+        });
     }
     </script>
 </body>
