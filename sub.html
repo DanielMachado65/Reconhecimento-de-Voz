@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test</title>
+</head>
+<body>
+	<script type="text/javascript">
+		var data = new Date();
+        var pad = "00"
+        var dataTime = data.getFullYear();
+        dataTime += pad.substring(data.getMonth().toString().length) + (data.getMonth() + 1);
+        dataTime += pad.substring(data.getDate().toString().length) + data.getDate();
+  		console.log(dataTime);
+	</script>
+</body>
+</html>

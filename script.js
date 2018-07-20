@@ -22,18 +22,23 @@ $('#button-click').on("click", function Speech() {
         var accessToken ="57b17c520a314701a3f2815d160473ee";
         var baseUrl = "https://api.dialogflow.com/v1/";
         var text = $('#note-textarea').val();
+        var data = new Date();
+        var pad = "00"
+        var dataTime = data.getFullYear();
+        dataTime += pad.substring(data.getMonth().toString().length) + (data.getMonth() + 1);
+        dataTime += pad.substring(data.getDate().toString().length) + data.getDate();
         $.ajax({
           type: 'POST',
-          url: baseUrl + "query?v=20180716",
+          url: baseUrl + "query?v=" + dataTime,
           contentType: "application/json; charset=utf-8",
           dataType: "json",
           headers: {
               "Authorization": "Bearer " + accessToken
           },
-          data: JSON.stringify({ query: text, lang: "pt-br", sessionId: "somerandomthing" }),
+          data: JSON.stringify({ query: text, lang: "pt-br", sessionId: "teste" }),
           success: function(data) {
-              console.log(data.result.fulfillment.speech);
-              console.log(data.result.action);
+              $('.resultado').html(data.result.fulfillment.speech);
+              $('#intencao').html("Intenção: " + data.result.action);
               try{
                 var synth = window.speechSynthesis;
                 if (speechSynthesis.onvoiceschanged !== undefined) {
